@@ -25,6 +25,7 @@ describe('POST /characters', ()=>{
 			}
 		}).then(response => {
 			expect(response.status).to.eq(201)
+			expect(response.body.character_id.length).to.eq(24)
 		})
 	})
 })
