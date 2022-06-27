@@ -24,25 +24,100 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-Cypress.Commands.add('setToken', ()=>{
+Cypress.Commands.add('setToken', () => {
 	cy.api({
 		method: 'POST',
 		url: '/sessions',
 		body: {
 			email: 'jorge@qacademy.io',
 			password: 'qa-cademy'
-		}
-	}).then(response=>{
+		},
+		failOnStatusCode: false
+	}).then(response => {
 		expect(response.status).to.eq(200)
 		Cypress.env('token', response.body.token)
 	})
 })
 
-Cypress.Commands.add('back2ThePast', ()=>{
+Cypress.Commands.add('back2ThePast', () => {
 	cy.api({
 		method: 'DELETE',
-		url: '/back2thepast/6299f5627bb0f40016e7aee7'
-	}).then(response =>{
+		url: '/back2thepast/6299f5627bb0f40016e7aee7',
+		failOnStatusCode: false
+	}).then(response => {
 		expect(response.status).to.eq(200)
+	})
+})
+
+Cypress.Commands.add('postCharacter', payload => {
+	cy.api({
+		method: 'POST',
+		url: '/characters',
+		body: payload,
+		headers: {
+			Authorization: Cypress.env('token')
+		},
+		failOnStatusCode: false
+	}).then(response => {
+		return response
+	})
+})
+
+Cypress.Commands.add('getCharacters', () => {
+	cy.api({
+		method: 'GET',
+		url: '/characters',
+		headers: {
+			Authorization: Cypress.env('token')
+		},
+		failOnStatusCode: false
+	}).then(response => {
+		return response
+	})
+})
+
+Cypress.Commands.add('populateCharacters', function (characters) {
+	characters.forEach(c => {
+		cy.postCharacter(c)
+	})
+})
+
+Cypress.Commands.add('searchCharacters', (characterName) => {
+	cy.api({
+		method: 'GET',
+		url: '/characters',
+		qs: { name: characterName },
+		headers: {
+			Authorization: Cypress.env('token')
+		},
+		failOnStatusCode: false
+	}).then(response => {
+		return response
+	})
+})
+
+Cypress.Commands.add('getCharactersById', (characterId) => {
+	cy.api({
+		method: 'GET',
+		url: '/characters/' + characterId,
+		headers: {
+			Authorization: Cypress.env('token')
+		},
+		failOnStatusCode: false
+	}).then(response => {
+		return response
+	})
+})
+
+Cypress.Commands.add('deleteCharactersById', (characterId) => {
+	cy.api({
+		method: 'DELETE',
+		url: '/characters/' + characterId,
+		headers: {
+			Authorization: Cypress.env('token')
+		},
+		failOnStatusCode: false
+	}).then(response => {
+		return response
 	})
 })
